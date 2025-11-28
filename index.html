@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IB logística y ventas</title>
+
+  <style>
+    :root { font-family: system-ui, Arial, sans-serif; }
+    body { margin: 0; background:#f6f7f9; color:#111; }
+
+    /* HEADER */
+    header {
+      background:#0f172a;
+      color:#fff;
+      padding:16px;
+      position:sticky;
+      top:0;
+      z-index:10;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:10px;
+    }
+
+    .logo {
+      width:120px;
+      height:auto;
+      border-radius:10px;
+    }
+
+    header h1 { margin:0; font-size:20px; }
+    .muted { color:#94a3b8; font-size:12px; }
+
+    .topbar {
+      display:flex;
+      gap:8px;
+      width:100%;
+    }
+
+    .topbar input {
+      flex:1;
+      padding:10px;
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+    }
+
+    .tag {
+      background:#0ea5e9;
+      color:#fff;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      display:flex;
+      align-items:center;
+    }
+
+    /* PRODUCTOS */
+    main { padding:12px; }
+
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
+      gap:12px;
+    }
+
+    .card {
+      background:#fff;
+      border-radius:14px;
+      padding:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,.06);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .product-img {
+      width:100%;
+      height:140px;
+      object-fit:cover;
+      border-radius:10px;
+      background:#e2e8f0;
+    }
+
+    .price { font-weight:700; }
+
+    .row {
+      display:flex;
+      gap:6px;
+      align-items:center;
+    }
+
+    .row button {
+      width:32px;
+      height:32px;
+      border:none;
+      border-radius:8px;
+      background:#e2e8f0;
+      font-size:18px;
+      cursor:pointer;
+    }
+
+    .row input {
+      width:48px;
+      text-align:center;
+      border:1px solid #cbd5e1;
+      border-radius:8px;
+      padding:6px;
+    }
+
+    /* CARRITO */
+    aside {
+      position:sticky;
+      bottom:0;
+      background:#fff;
+      border-top:1px solid #e5e7eb;
+      padding:12px;
+    }
+
+    .btn {
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .btn-wsp { background:#22c55e; color:white; }
+    .btn-clear { background:#f1f5f9; margin-top:8px; }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <img src="img/ivan.jpg" class="logo" alt="logo">
+    <h1>🧀 Catálogo Mayorista — Lácteos</h1>
+    <div class="muted">Seleccioná cantidades y enviá el pedido por WhatsApp</div>
+
+    <div class="topbar">
+      <input id="search" placeholder="Buscar producto..." />
+      <span class="tag" id="countTag">0 items</span>
+    </div>
+  </header>
+
+
+  <!-- PRODUCTOS -->
+  <main>
+    <div id="productGrid" class="grid"></div>
+  </main>
+
+  <!-- CARRITO SIMPLE -->
+  <aside>
+    <button class="btn btn-wsp" id="sendBtn">Enviar pedido por WhatsApp</button>
+    <button class="btn btn-clear" id="clearBtn">Vaciar selección</button>
+  </aside>
+
+<script>
+  /* LISTA CON IMÁGENES */
+  const PRODUCTS = [
+    { id: 1, name: "Leche Entera 1L", price: 1250, image: "img/spoty.png" },
+    { id: 2, name: "Leche Descremada 1L", price: 1230, image: "img/leche2.jpg" },
+    { id: 3, name: "Yogur Bebible Frutilla 900g", price: 1750, image: "img/yogur1.jpg" },
+    { id: 4, name: "Yogur Firme Vainilla 190g", price: 420, image: "img/yogur2.jpg" },
+    { id: 5, name: "Queso Cremoso x Kg", price: 6900, image: "img/queso.jpg" },
+    { id: 6, name: "Manteca 200g", price: 2400, image: "img/manteca.jpg" },
+    { id: 7, name: "Crema de Leche 200ml", price: 1300, image: "img/crema.jpg" },
+    { id: 8, name: "Dulce de Leche 400g", price: 1600, image: "img/dulce.jpg" },
+  ];
+
+  const productGrid = document.getElementById("productGrid");
+  const search = document.getElementById("search");
+  const sendBtn = document.getElementById("sendBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const countTag = document.getElementById("countTag");
+
+  let cart = {};
+
+  function money(n) { return "$ " + n.toLocaleString("es-AR"); }
+
+  function renderProducts(list){
+    productGrid.innerHTML = "";
+    list.forEach(p => {
+      const qty = cart[p.id] || 0;
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <img src="${p.image}" class="product-img" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <div class="price">${money(p.price)}</div>
+        <div class="row">
+          <button class="dec">−</button>
+          <input class="qty" value="${qty}" min="0" type="number">
+          <button class="inc">+</button>
+        </div>
+      `;
+
+      const dec = card.querySelector(".dec");
+      const inc = card.querySelector(".inc");
+      const input = card.querySelector(".qty");
+
+      inc.onclick = () => updateQty(p.id, qty + 1);
+      dec.onclick = () => updateQty(p.id, Math.max(0, qty - 1));
+      input.onchange = () => updateQty(p.id, Number(input.value));
+
+      productGrid.appendChild(card);
+    });
+  }
+
+  function updateQty(id, qty){
+    if (qty <= 0) delete cart[id];
+    else cart[id] = qty;
+
+    countTag.textContent = Object.values(cart).reduce((a,b)=>a+b,0) + " items";
+
+    renderProducts(
+      PRODUCTS.filter(p => p.name.toLowerCase().includes(search.value.toLowerCase()))
+    );
+  }
+
+  search.oninput = () => {
+    renderProducts(
+      PRODUCTS.filter(p => p.name.toLowerCase().includes(search.value.toLowerCase()))
+    );
+  };
+
+  clearBtn.onclick = () => {
+    cart = {};
+    countTag.textContent = "0 items";
+    renderProducts(PRODUCTS);
+  };
+
+  sendBtn.onclick = () => {
+    if (Object.keys(cart).length === 0) return alert("Seleccioná algún producto.");
+
+    let msg = "🧀 *PEDIDO MAYORISTA*\n\n";
+
+    PRODUCTS.forEach(p => {
+      if (cart[p.id]) {
+        msg += `• ${p.name} x ${cart[p.id]} — ${money(p.price * cart[p.id])}\n`;
+      }
+    });
+
+    const url = "https://wa.me/5490000000000?text=" + encodeURIComponent(msg);
+    window.open(url, "_blank");
+  };
+
+  renderProducts(PRODUCTS);
+</script>
+
+</body>
+</html>
