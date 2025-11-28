@@ -236,19 +236,26 @@
   };
 
   sendBtn.onclick = () => {
-    if (Object.keys(cart).length === 0) return alert("Seleccioná algún producto.");
+  if (Object.keys(cart).length === 0) return alert("Seleccioná algún producto.");
 
-    let msg = "🧀 *PEDIDO MAYORISTA*\n\n";
+  let msg = "🧀 *PEDIDO MAYORISTA*\n\n";
+  let total = 0;
 
-    PRODUCTS.forEach(p => {
-      if (cart[p.id]) {
-        msg += `• ${p.name} x ${cart[p.id]} — ${money(p.price * cart[p.id])}\n`;
-      }
-    });
+  PRODUCTS.forEach(p => {
+    if (cart[p.id]) {
+      const subtotal = p.price * cart[p.id];
+      total += subtotal;
+      msg += `• ${p.name} x ${cart[p.id]} — ${money(subtotal)}\n`;
+    }
+  });
 
-    const url = "https://wa.me/5492657219585?text=" + encodeURIComponent(msg);
-    window.open(url, "_blank");
-  };
+  msg += `\n----------------------\n`;
+  msg += `*TOTAL: ${money(total)}*`;
+
+  const url = "https://wa.me/5492657219585?text=" + encodeURIComponent(msg);
+  window.open(url, "_blank");
+};
+
 
   renderProducts(PRODUCTS);
 </script>
