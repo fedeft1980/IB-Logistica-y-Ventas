@@ -26,19 +26,20 @@
 }
 
     .logo {
-      width:200px;
-      height:auto;
-      border-radius:10px;
-    }
+  width: clamp(160px, 20vw, 240px);
+  height:auto;
+  border-radius:10px;
+}
+
 
     header h1 { margin:0; font-size:20px; }
     .muted { color:#94a3b8; font-size:12px; }
 
-   .topbar {
+  .topbar {
   display:flex;
   gap:8px;
   width:100%;
-  max-width:700px;   /* <-- evita que se vaya gigante en PC */
+  max-width:700px;
   justify-content:center;
 }
 
@@ -145,10 +146,13 @@
     <h1>🧀 Catálogo Mayorista — Lácteos</h1>
     <div class="muted">Seleccioná cantidades y enviá el pedido por WhatsApp</div>
 
-    <div class="topbar">
-      <input id="search" placeholder="Buscar producto..." />
-      <span class="tag" id="countTag">0 items</span>
-    </div>
+   <div class="topbar">
+  <input id="search" placeholder="Buscar producto..." />
+  <span class="tag" id="countTag">0 items</span>
+  <span class="tag tag-total" id="totalTag">$ 0</span>
+  <button class="tag tag-btn" id="viewCartBtn">Ver pedido</button>
+</div>
+
   </header>
 
 
@@ -263,6 +267,25 @@
 
   renderProducts(PRODUCTS);
 </script>
+<!-- MODAL RESUMEN PEDIDO -->
+<div id="cartModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>🧾 Tu pedido</h2>
+      <button id="closeModal" class="close">✕</button>
+    </div>
+
+    <div id="cartItems" class="modal-items"></div>
+
+    <div class="modal-footer">
+      <div class="modal-total">
+        Total: <span id="modalTotal">$ 0</span>
+      </div>
+      <button class="btn btn-wsp" id="modalSendBtn">Enviar por WhatsApp</button>
+      <button class="btn btn-clear" id="modalClearBtn">Vaciar selección</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
