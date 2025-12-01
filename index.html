@@ -11,20 +11,22 @@
 
     /* HEADER */
     header {
-      background:#0f172a;
-      color:#fff;
-      padding:16px;
-      position:sticky;
-      top:0;
-      z-index:10;
-      display:flex;
-      flex-direction:column;
-      align-items:flex-start;
-      gap:10px;
-    }
+  background:#0f172a; /* esto lo cambiamos en el punto 2 */
+  color:#fff;
+  padding:16px;
+  position:sticky;
+  top:0;
+  z-index:10;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;    /* <-- centra horizontalmente */
+  text-align:center;     /* <-- centra el texto */
+  gap:12px;
+}
 
     .logo {
-      width:120px;
+      width:200px;
       height:auto;
       border-radius:10px;
     }
@@ -32,11 +34,13 @@
     header h1 { margin:0; font-size:20px; }
     .muted { color:#94a3b8; font-size:12px; }
 
-    .topbar {
-      display:flex;
-      gap:8px;
-      width:100%;
-    }
+   .topbar {
+  display:flex;
+  gap:8px;
+  width:100%;
+  max-width:700px;   /* <-- evita que se vaya gigante en PC */
+  justify-content:center;
+}
 
     .topbar input {
       flex:1;
@@ -163,11 +167,11 @@
   /* LISTA CON IMÁGENES */
   const PRODUCTS = [
     { id: 1, name: "Leche Entera 1L", price: 1250, image: "ivan.jpeg" },
-    { id: 2, name: "Leche Descremada 1L", price: 1230, image: "1.png" },
-    { id: 3, name: "Yogur Bebible Frutilla 900g", price: 1750, image: "2.png" },
-    { id: 4, name: "Yogur Firme Vainilla 190g", price: 420, image: "3.png" },
-    { id: 5, name: "Queso Cremoso x Kg", price: 6900, image: "4.png" },
-    { id: 6, name: "Manteca 200g", price: 2400, image: "1.png" },
+    { id: 2, name: "Leche Descremada 1L", price: 1230, image: "5.png" },
+    { id: 3, name: "Yogur Bebible Frutilla 900g", price: 1750, image: "6.png" },
+    { id: 4, name: "Yogur Firme Vainilla 190g", price: 420, image: "7.png" },
+    { id: 5, name: "Queso Cremoso x Kg", price: 6900, image: "8.png" },
+    { id: 6, name: "Manteca 200g", price: 2400, image: "9.png" },
     { id: 7, name: "Crema de Leche 200ml", price: 1300, image: "2.png" },
     { id: 8, name: "Dulce de Leche 400g", price: 1600, image: "3.png" },
   ];
