@@ -226,6 +226,31 @@
       font-weight:800;
       text-align:right;
     }
+    .modal-qty {
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.modal-qty button {
+  width:28px;
+  height:28px;
+  border:none;
+  border-radius:6px;
+  background:#e2e8f0;
+  font-size:16px;
+  cursor:pointer;
+  line-height:1;
+}
+
+.modal-qty input {
+  width:44px;
+  text-align:center;
+  border:1px solid #cbd5e1;
+  border-radius:6px;
+  padding:4px;
+}
+
   </style>
 </head>
 
@@ -375,9 +400,10 @@
 
     updateHeader();
     renderProducts(getFilteredProducts());
-    renderCartModal(); // refresca modal si está abierto
+    renderCartModal();
   }
 
+  // ✅ MODAL CON EDICIÓN
   function renderCartModal(){
     const { items, total } = calcTotals();
     modalTotal.textContent = money(total);
@@ -388,20 +414,45 @@
     }
 
     cartItems.innerHTML = "";
+
     PRODUCTS.forEach(p => {
       const qty = cart[p.id];
       if(!qty) return;
+
       const subtotal = qty * p.price;
 
       const row = document.createElement("div");
       row.className = "modal-item";
+
       row.innerHTML = `
         <div>
           <div class="name">${p.name}</div>
-          <div class="sub">${qty} x ${money(p.price)}</div>
+          <div class="sub">${money(p.price)} c/u</div>
         </div>
-        <div class="price">${money(subtotal)}</div>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="modal-qty">
+            <button class="mdec">−</button>
+            <input class="mqty" type="number" min="0" value="${qty}">
+            <button class="minc">+</button>
+          </div>
+          <div class="price">${money(subtotal)}</div>
+        </div>
       `;
+
+      const mdec = row.querySelector(".mdec");
+      const minc = row.querySelector(".minc");
+      const mqty = row.querySelector(".mqty");
+
+      minc.onclick = () => updateQty(p.id, (cart[p.id] || 0) + 1);
+      mdec.onclick = () => updateQty(p.id, Math.max(0, (cart[p.id] || 0) - 1));
+
+      mqty.onchange = () => {
+        const raw = parseInt(mqty.value || "0", 10);
+        const safeQty = isNaN(raw) ? 0 : Math.max(0, raw);
+        updateQty(p.id, safeQty);
+      };
+
       cartItems.appendChild(row);
     });
   }
@@ -431,7 +482,7 @@
   }
 
   // Buscar
- 	search.oninput = () => renderProducts(getFilteredProducts());
+  search.oninput = () => renderProducts(getFilteredProducts());
 
   // Vaciar
   clearBtn.onclick = () => {
@@ -461,6 +512,7 @@
   updateHeader();
   renderProducts(PRODUCTS);
 </script>
+
 
 </body>
 </html>
